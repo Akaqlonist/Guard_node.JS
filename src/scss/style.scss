@@ -1,0 +1,167 @@
+body {
+  font: 14px 'Open Sans', sans-serif;
+  background: #717699;
+}
+
+a {
+  color: #0092cc;
+  text-decoration: none;
+}
+
+.error {
+  color: red;
+}
+
+.container {
+  display: inline-block;
+  position: absolute;
+  width: 100%;
+  padding: 51px 0px;
+  min-height: 100%;
+}
+
+.background {
+  background: url('/images/bg with blur.png');
+  background-size: 100% 100%;
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.header {
+  height: 75px;
+  position: fixed;
+  width: 100%;
+  background-color: #2a4471;
+  display: flex;
+  justify-content:  space-around;
+  border-bottom: 2px solid #4a73b9;
+  z-index: 999
+}
+
+.nav-item {
+  height: 75px;
+  line-height: 75px;
+  color: #ddd;
+  font-size: 20px;
+}
+
+.nav-item a {
+  color: white;
+}
+
+.nav-item a:hover {
+  color: #eee;
+}
+
+.navbar {
+  margin-bottom: 0px;
+  position: fixed;
+  width: 100%;
+}
+
+/* bootstrap tweaks */
+.navbar-brand {
+  padding: 0px 0px 0px 15px;
+}
+
+.navbar-default {
+  background-color: #2a4471;
+}
+
+.navbar-default .navbar-text {
+  color: #ccc;
+}
+
+.navbar-default .navbar-nav>li>a {
+  color: #d7e1e8;
+}
+.navbar-default .navbar-nav>li>a:focus {
+  color: #d7e1e8;
+}
+.navbar-default .navbar-nav>li>a:hover {
+  color: #eee;
+}
+
+.navbar-right-item {
+  opacity: 0.75;
+}
+
+.navbar-right-item:hover {
+  opacity: 1;
+}
+
+.submit {
+  background-color: #304E82;
+  color: white;
+  border: none;
+  padding: 15px 60px 15px 60px;
+  border-radius: 36px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.panel-container {
+  width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 15px;
+}
+
+.big {
+  color: #111;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.small {
+  color: #999;
+  font-size: 13px;
+}
+
+.m-l-0 {
+  margin-left:  0px;
+}
+
+.m-l-1 {
+  margin-left:  4px;
+}
+
+.m-l-2 {
+  margin-left:  8px;
+}
+
+.m-b-2 {
+  margin-bottom: 8px;
+}
+
+.m-b-4 {
+  margin-bottom: 16px;
+}
+
+.full-width {
+  width: 100% !important;
+}
+
+.left-text {
+  text-align-last: left !important;
+}
+
+.center-text {
+  text-align-last: center !important;
+}
+
+.label {
+  color: #777;
+  font-size: 13px;
+}
+
+.block {
+  display: block !important;
+}
+
+.dark {
+  color: #111;
+}

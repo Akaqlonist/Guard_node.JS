@@ -1,0 +1,18 @@
+extends layout
+block head
+  link(rel='stylesheet', href='/stylesheets/login-and-signup.css')
+
+block content
+    div.stars
+
+    form.login-form(name="login" method="post")
+      span.login-form-contents
+        div.login-form-title(style='white-space:pre;')
+        if errors
+          div.errors
+            each error in errors
+              span.error=error
+        div.input
+            input.textbox(type="text", placeholder="Enter your email", name="email", required)
+        div.actions
+          input.submit(type="submit", value="Send Password Recovery Email")

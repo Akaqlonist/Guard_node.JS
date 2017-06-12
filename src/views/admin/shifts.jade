@@ -1,0 +1,155 @@
+extends ../layout
+block head
+  link(rel='stylesheet', href='/stylesheets/admin.css')
+  script(src='/javascripts/sortable.min.js')
+  link(rel='stylesheet', href='/stylesheets/sortable-theme-bootstrap.css')
+  link(rel='stylesheet', href='/stylesheets/bootstrap-multiselect.css', type='text/css')
+block content
+  .panel-container
+    .panel.panel-default
+      table.table.table-striped.sortable-bootstrap(data-sortable)
+        thead
+          tr
+            th(data-sortable-type="alpha") User Email
+            th(data-sortable-type="numeric") Number Of Guards
+            th Armed
+            th Uniform
+            //- th From Action
+            th(data-sortable-type="date") From Time
+            th(data-sortable-type="alpha") Address
+            //- th To Action
+            th(data-sortable-type="date") To Time
+            //- th(data-sortable-type="alpha") To Address
+            th Assigned Guard(s)
+            th Notes
+        tbody
+          each request in requests
+            tr(class="#{request.id}")
+              td
+                a(href="mailto:#{request.email}")=request.email
+              td.number-of-guards=request.numberOfGuards
+              td=request.armed
+              if request.uniformed
+                td Casual
+              else
+                td Business
+              //- td=request.fromAction
+              td=moment(parseInt(request.fromTimestamp)).format("LLLL") 
+              td=request.fromAddress
+              //- td=request.toAction
+              td=moment(parseInt(request.toTimestamp)).format("LLLL") 
+              //- td=request.toAddress
+              td
+                select(class="guard-select" multiple)
+                  each guard in guards
+                    option(value = guard.id, selected=request.guardIds.indexOf(guard.id) != -1)=guard.email
+              td=request.notes
+              td
+                a(href="/bookings/#{request.id}?userId=#{request.userId}") Edit
+block scripts
+  script(type='text/javascript', src='/javascripts/bootstrap-multiselect.js')
+  script.
+    $(document).ready(function() {
+
+      $('.guard-select').multiselect({
+          
+          onChange: function(option, checked) {
+                var requestId = parseInt(this.$select.parent().parent().parent().attr('class'));
+                var guardId =  $(option).val();
+                if (checked) {
+                  $.ajax({
+                      url: '/bookings/' + requestId + "/assign",
+                      type: 'PATCH',
+                      data: {guardId: guardId},
+                      success: function(result) {
+                      }
+                  })
+                } else {
+                   $.ajax({
+                      url: '/bookings/' + requestId + "/unassign",
+                      type: 'PATCH',
+                      data: {guardId: guardId},
+                      success: function(result) {
+                      }
+                  })
+                }
+                // Get selected options.
+                var selectedOptions = this.$select[0].selectedOptions;
+                var numberOfGuards = this.$select.parent().parent().parent().find('.number-of-guards').text();
+                if (selectedOptions.length >= numberOfGuards) {
+                    // Disable all other checkboxes.
+                    var nonSelectedOptions = this.$select.find('option').filter(function() {
+                        return !$(this).is(':selected');
+                    });
+ 
+                    nonSelectedOptions.each(function() {
+                        var input = $('input[value="' + $(this).val() + '"]');
+                        input.prop('disabled', true);
+                        input.parent('li').addClass('disabled');
+                    });
+                }
+                else {
+                    // Enable all checkboxes.
+                    this.$select.find('option').each(function() {
+                        var input = $('input[value="' + $(this).val() + '"]');
+                        input.prop('disabled', false);
+                        input.parent('li').addClass('disabled');
+                    });
+                }
+            },
+          enableFiltering: true
+      });
+
+      $('.guard-select').each(function() {
+          var selectedOptions = this.selectedOptions;
+          var numberOfGuards = $(this).parent().parent().parent().find('.number-of-guards').text();
+          if (selectedOptions.length >= numberOfGuards) {
+              // Disable all other checkboxes.
+              var nonSelectedOptions = $(this)  .find('option').filter(function() {
+                  return !$(this).is(':selected');
+              });
+
+              nonSelectedOptions.each(function() {
+                  var input = $('input[value="' + $(this).val() + '"]');
+                  input.prop('disabled', true);
+                  input.parent('li').addClass('disabled');
+              });
+          }
+          else {
+                // Enable all checkboxes.
+                $(this).find('option').each(function() {
+                    var input = $('input[value="' + $(this).val() + '"]');
+                    input.prop('disabled', false);
+                    input.parent('li').addClass('disabled');
+                });
+            }
+      })
+    })
+    //- $('.guard-select').change(function(e) {
+    //-   var numberOfGuards = $(this).parent().parent().find('.number-of-guards').text();
+    //-   var count = 0;
+    //-   for (var i = 0; i < this.options.length; i++)
+    //-   {
+    //-     var option = this.options[i];
+
+    //-     option.selected ? count++ : null;
+
+    //-     if (count > numberOfGuards)
+    //-     {
+    //-         option.selected = false;
+    //-         option.disabled = true;
+    //-     } else{
+    //-         option.disabled = false;
+    //-     }
+    //-   }
+    //-   var guardId = this.value || this.options[0].value;
+    //-   var requestId = parseInt($(this).parent().parent().attr('class'));
+    //-   $.ajax({
+    //-       url: '/bookings/' + requestId + "/assign",
+    //-       type: 'PATCH',
+    //-       data: {guardId: this.value},
+    //-       success: function(result) {
+    //-       }
+    //-   })
+    //-   $(this).prev().click()    
+    //- })

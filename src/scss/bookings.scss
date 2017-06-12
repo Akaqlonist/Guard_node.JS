@@ -1,0 +1,160 @@
+.input-container {
+  padding: 10px 0px 10px 0px;
+}
+
+.input-container span {
+  padding: 5px 0px 5px 0px;
+}
+
+.input-container .input {
+  margin: 0px 10px 0px 10px;
+}
+
+.panel {
+  padding: 10px 20px 10px 20px;
+  color: #777;
+}
+
+.panel-heading {
+  color: #999;
+  border-bottom: 1px solid #ddd;
+}
+
+.panel-heading h2 {
+  color: #111;
+}
+
+.panel-container {
+  width: 600px;
+  margin-left: auto;
+  margin-right: auto; 
+  margin-top: 15px;
+}
+
+.input {
+ -webkit-appearance: none;
+ -moz-appearance: none;
+ appearance: none;
+ border: none;
+ border-bottom: 1px dotted #9BBFD9;
+ width: 100px; 
+ text-align-last:center;
+ color: #0373A8;
+ font-weight: 800;
+}
+
+.select {
+ width: 100px; 
+ text-align-last:center;
+ color: #0373A8;
+ font-weight: 800;
+}
+
+
+.input:focus {
+  outline: none;
+}
+
+.long-input {
+  width: 200px;
+}
+
+.extra-long-input {
+  width: 500px;
+}
+
+
+select option {
+  text-align: center;
+}
+
+.submit {
+  color: black;
+}
+
+.submit {
+  float: right;
+  background-color: #304E82;
+  color: white;
+  border: none;
+  padding: 10px 60px 10px 60px;
+  border-radius: 36px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.submission-info {
+  color: red;
+}
+
+.notes {
+  padding: 4px 0px 4px 8px;
+}
+
+.cost-and-duration {
+  margin-top: 20px;
+  display: flex
+}
+
+.cost {
+  padding-right: 10px;
+}
+
+.actions {
+  margin-left: auto;
+}
+
+.progressbar-container {
+  width: 600px;
+  margin: 45px auto; 
+}
+.progressbar {
+  counter-reset: step;
+  display: flex;
+  justify-content: center;
+}
+.progressbar li {
+  list-style-type: none;
+  width: 25%;
+  float: left;
+  font-size: 11px;
+  position: relative;
+  text-align: center;
+  text-transform: uppercase;
+  color: #9197AC;
+}
+.progressbar li:before {
+  width: 20px;
+  height: 20px;
+  content: '';
+  counter-increment: step;
+  line-height: 20px;
+  display: block;
+  text-align: center;
+  margin: 0 auto -45px auto;
+  border-radius: 50%;
+  background-color: #9197AC;
+}
+.progressbar li:after {
+  width: 100%;
+  height: 2px;
+  content: '';
+  position: absolute;
+  background-color: #9197AC;
+  top: 10px;
+  left: -50%;
+  z-index: -1;
+}
+.progressbar li:first-child:after {
+  content: none;
+}
+.progressbar li.active {
+  color: #ddd;
+}
+.progressbar li.active:before {
+  background-color: #00B3E7;
+}
+
+.cancel-booking {
+  text-align: center;
+}

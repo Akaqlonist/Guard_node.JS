@@ -1,0 +1,112 @@
+.background {
+  background: url('/images/bg with blur.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat
+}
+
+.stars {
+  background: url(/images/stars.png);
+  margin-left: auto;
+  margin-right: auto;
+  background-repeat: no-repeat;
+  height: 100px;
+  width: 317px;
+  margin-top: 100px;
+}
+
+
+.login-form {
+  background: url('/images/login-form-bg.png');
+  width: 400px;
+  height: 500px;
+  background-size: 400px 500px;
+  background-repeat-y: no-repeat;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  position: relative;
+}
+
+.signup-form {
+  background: url('/images/login-form-bg.png');
+  width: 400px;
+  height: 700px;
+  background-size: 400px 690px;
+  background-repeat-y: no-repeat;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  position: relative;
+}
+
+.login-form-title {
+  color: #C32024;
+  font-size: 28px;
+  font-weight: 600;
+  padding-bottom: 24px;
+}
+
+.login-form-contents {
+  position: relative;
+  top: 50px;
+}
+
+.signup-form-contents {
+  position: relative;
+  top: 50px;
+}
+
+.input {
+  width: 202px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.textbox {
+  height: 20px;
+  font-size: 16px;
+  margin-bottom: 20px;
+  border-style: ridge;
+  border-width: 1px;
+  padding-left: 5px;
+  border-radius: 3px;
+}
+
+.textbox::-webkit-input-placeholder { /* Chrome */
+  color: #ccc;
+}
+.textbox:-ms-input-placeholder { /* IE 10+ */
+  color: #ccc;
+}
+.textbox::-moz-placeholder { /* Firefox 19+ */
+  color: #ccc;
+  opacity: 1;
+}
+.textbox:-moz-placeholder { /* Firefox 4 - 18 */
+  color: #ccc;
+  opacity: 1;
+}
+
+.label {
+  text-align: left;
+  font-size: 12px;
+  color: #aaa;
+  padding-bottom: 5px;
+}
+
+.checkbox {
+  display: inline-block;
+  position: relative;
+  top: 1px;
+}
+
+.checkbox-label {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.container {
+  padding-top: 0px;
+}
+
+

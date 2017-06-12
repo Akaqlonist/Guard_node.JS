@@ -1,0 +1,175 @@
+extends layout
+include progress-bar
+include modal
+
+block head
+  link(rel='stylesheet', href='/stylesheets/bookings.css')
+
+block bodyTop
+  +modal("Are you sure?", "Are you sure you want to cancel this booking?", "Yes", "No")
+
+block content
+  +progress-bar(0)
+  .panel-container
+    .panel
+      .panel-heading.small
+        h2 Request a Guard
+        | Fill out the information below to book a guard
+      .panel-body
+        form.request-form(name="signup" method="post")
+          span.request-form-contents
+            if errors
+              div.errors
+                each error in errors
+                  span.error=error
+            div.input-container
+              span I need
+              select.input.number-of-guards(name="numberOfGuards")
+                option(value="1", selected=request ? request.numberOfGuards == 1 : false) 1
+                option(value="2", selected=request ? request.numberOfGuards == 2 : false) 2
+                option(value="3", selected=request ? request.numberOfGuards == 3 : false) 3
+                option(value="4", selected=request ? request.numberOfGuards == 4 : false) 4
+                option(value="5", selected=request ? request.numberOfGuards == 5 : false) 5
+              span Vet Guards
+            div.input-container
+              select.input.m-l-0.long-input.armed(name="armed")
+                option(value="true", selected=request ? request.armed : false) Armed
+                option(value="false", selected=request ? !request.armed : false) Unarmed
+              span and in
+              select.input.long-input(name="uniformed", selected=request ? request.uniformed.toString() : "true")
+                option(value="true", selected=request ? request.uniformed : false) Casual Attire
+                option(value="false", selected=request ? !request.uniformed : false) Business Attire
+            div.input-container
+              span from
+              input.input.long-input.textbox.from-date(type="date", name="fromDate", required, value=request ? moment(parseInt(request.fromTimestamp)).format("YYYY-MM-DD") : "")
+              span at
+              input.input.textbox.from-time(type="time", name="fromTime", required, value=request ? moment(parseInt(request.fromTimestamp)).format("HH:MM") : "")
+            div.input-container
+              span to arrive & remain 
+              //- select.input.long-input(name="fromAction")
+              //-   option(value="pickup", selected=request ? request.fromAction == "pickup" : false) pick me up by car
+              //-   option(value="arrive", selected=request ? request.fromAction == "arrive" : false) arrive
+              span at
+              input.input.long-input.fromautocomplete(placeholder='Enter your address', type='text', name="fromAddress", required, value=request ? request.fromAddress : "")
+            div.input-container
+              span until
+              input.input.long-input.textbox.to-date(type="date", name="toDate", required, value=request ? moment(parseInt(request.toTimestamp)).format("YYYY-MM-DD") : "")
+              span at
+              input.input.textbox.to-time(type="time", name="toTime", required, value=request ? moment(parseInt(request.toTimestamp)).format("HH:MM") : "")
+            //- div.input-container
+            //-   span to
+            //-   select.input.long-input(name="toAction")
+            //-     option(value="dropoff", selected=request ? request.toAction == "dropoff" : false) drop off
+            //-     option(value="remain",  selected=request ? request.toAction == "remain" : false) remain
+            //-   span at
+            //-   input.input.long-input.toautocomplete(placeholder='Enter your destination', type='text', name="toAddress", required, value=request ? request.toAddress : "")
+            div.input-container  
+              div.m-b-2.small Notes for the guard
+              input.m-l-0.extra-long-input.textbox.notes(type="text", name="notes", placeholder="Anything else we should know?", value=request ? request.notes : "")
+            div.cost-and-duration
+              span.cost
+                span.cost-label.small TOTAL COST
+                br
+                span.cost-amount.big $0
+              span.duration
+                span.duration-label.small DURATION
+                br
+                span.duration-amount.big 0 hrs
+              div.actions
+                input.submit(type="submit", value=request ? "Update Booking": "BOOK GUARD")
+                if request
+                  div.cancel-booking(href="#") 
+                    button(data-toggle="modal", data-target="#myModal") Cancel Booking
+            div.submission-info
+       
+     
+block scripts
+  script.
+    var request = !{JSON.stringify(request || null)};
+    var fromAutoComplete;
+    var fromLat = request ? request.fromLat : null
+    var fromLong = request ? request.fromLong : null; 
+    var toAutoComplete;
+    function initGoogleMaps() {
+      // Create the autocomplete object, restricting the search to geographical
+      // location types.
+         fromAutoComplete = new google.maps.places.Autocomplete(
+          /** @type {!HTMLInputElement} */($('.fromautocomplete').get(0)),
+          {types: ['geocode']});
+
+         google.maps.event.addListener(fromAutoComplete, 'place_changed', function () {
+            var fromPlace = fromAutoComplete.getPlace();
+            fromLat = fromPlace.geometry.location.lat();
+            fromLong = fromPlace.geometry.location.lng();
+         });
+
+         toAutoComplete = new google.maps.places.Autocomplete(
+          /** @type {!HTMLInputElement} */($('.toautocomplete').get(0)),
+          {types: ['geocode']});
+      }
+
+    var oldCost;
+    $(document).ready(function() {
+      oldCost = calculateCost();
+    });
+
+    function calculateCost() {
+      var fromDate = $('.from-date').val();
+      var fromTime = $('.from-time').val();
+      var toDate = $('.to-date').val();
+      var toTime = $('.to-time').val();
+      if (fromDate === '' || fromTime === '' || toDate === '' || toTime === '') return;
+      var result = calculateCostAndDuration(fromDate, fromTime, toDate, toTime, JSON.parse($('.number-of-guards').val()), JSON.parse($('.armed').val()))
+      var duration = result.duration;
+      var cost = result.cost;
+      $('.cost-amount').html("$" + cost);
+      $('.duration-amount').html(duration + " hrs");
+
+      if (cost > oldCost) {
+        $('.submission-info').html('This change will charge the user\'s credit card $' + (cost - oldCost) + ' more dollars.')  
+      } else if (cost < oldCost) {
+        $('.submission-info').html('This change will refund $' + (oldCost - cost) + ' dollars.')  
+      } else {
+        $('.submission-info').html('');
+      }
+
+      return cost;
+    }
+
+    $('.from-date').change(calculateCost)
+    $('.from-time').change(calculateCost)
+    $('.to-date').change(calculateCost)
+    $('.to-time').change(calculateCost)
+    $('.armed').change(calculateCost)
+    $('.number-of-guards').change(calculateCost)
+    $('.cancel-booking button').click(function(e) {
+      e.preventDefault();
+    });
+
+    $('.modal-footer .btn-primary').click(function(e) {
+      $.ajax({
+          url: '/bookings/' + request.id,
+          type: 'DELETE',
+          success: function(result) {
+            window.location.href = "/";
+          }
+      })
+      $(this).prev().click()    
+    })
+
+      var $form = $('.request-form');
+      $form.submit(function(event) {
+        // Disable the submit button to prevent repeated clicks:
+        $('.submit').prop('disabled', true);
+        
+        // Insert the token ID into the form so it gets submitted to the server:
+        $form.append($('<input type="hidden" name="fromLat">').val(fromLat));
+        $form.append($('<input type="hidden" name="fromLong">').val(fromLong));
+
+        $from.get(0).submit();
+        return false;
+      });
+
+
+
+    

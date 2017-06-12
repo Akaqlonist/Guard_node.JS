@@ -1,0 +1,156 @@
+extends layout
+block head
+  link(rel='stylesheet', href='/stylesheets/shifts.css')
+
+block content
+  .panel-container
+
+    .panel.panel-default
+      .panel-heading Bookings Assigned to You
+      .panel-body
+        if assigned.length == 0
+          | You have no assigned bookings.
+        else
+          each request in assigned
+            div.request-container
+              div.map-container
+                div
+                  div(class='map from-map-#{request.id}')
+                  div.map-label.small.dark
+                    =moment(parseInt(request.fromTimestamp)).format("dddd, MM/DD/YY")
+                    |  at 
+                    =moment(parseInt(request.fromTimestamp)).format("hh:mm")
+                    |  at 
+                    =request.fromAddress
+                div
+                  div(class='map to-map-#{request.id}')
+                  div.map-label.small.dark
+                    =moment(parseInt(request.toTimestamp)).format("dddd, MM/DD/YY")
+                    |  at 
+                    =moment(parseInt(request.toTimestamp)).format("hh:mm")
+                    |  at 
+                    =request.toAddress
+
+              div.panel-footer-custom
+                span.cost
+                  span.cost-label.small TOTAL COST
+                  br
+                  span(class="cost-amount cost-amount-#{request.id} big") $0
+                span.duration
+                  span.duration-label.small DURATION
+                  br
+                  span(class="duration-amount duration-amount-#{request.id} big") 0 hrs
+                div.actions
+                  span(class="#{request.id}")
+                    button.btn.btn-default.unassign.m-b-4 Unassign
+    .panel.panel-default
+      .panel-heading Nearby Bookings
+      .panel-body
+        if unassigned.length == 0
+          | There are no bookings near you. Try increasing your service radius.
+        else
+          each request in unassigned
+            div.request-container
+              div.map-container
+                div
+                  div(class='map from-map-#{request.id}')
+                  div.map-label.small.dark
+                    =moment(parseInt(request.fromTimestamp)).format("dddd, MM/DD/YY")
+                    |  at 
+                    =moment(parseInt(request.fromTimestamp)).format("hh:mm")
+                    |  at 
+                    =request.fromAddress
+                div
+                  div(class='map to-map-#{request.id}')
+                  div.map-label.small.dark
+                    =moment(parseInt(request.toTimestamp)).format("dddd, MM/DD/YY")
+                    |  at 
+                    =moment(parseInt(request.toTimestamp)).format("hh:mm")
+                    |  at 
+                    =request.toAddress
+              
+              div.panel-footer-custom
+                span.cost
+                  span.cost-label.small TOTAL PAYOUT
+                  br
+                  span(class="cost-amount cost-amount-#{request.id} big") $0
+                span.duration
+                  span.duration-label.small DURATION
+                  br
+                  span(class="duration-amount duration-amount-#{request.id} big") 0 hrs
+                div.actions
+                  span(class="#{request.id}")
+                    button.btn.btn-default.assign.m-b-4 Assign To Me
+
+block scripts
+  script.
+    var geocoder;
+    var assigned;
+    var unassigned;
+    var allRequests;
+    var guard = !{JSON.stringify(guard || null)};
+    $(document).ready(function() {
+      assigned = !{JSON.stringify(assigned)};
+      unassigned = !{JSON.stringify(unassigned)};
+      allRequests = assigned.concat(unassigned);
+      for (i in allRequests) {
+        var request = allRequests[i];
+        var result = calculateCostAndDurationFromTimestamps(request.fromTimestamp, request.toTimestamp, request.numberOfGuards, request.armed);
+        $('.cost-amount-' + request.id).html("$" + result.cost);
+        $('.duration-amount-' + request.id).html(result.duration + " hrs");
+      }
+    });
+
+    $('.assign').click(function() {
+       $.ajax({
+          url: '/bookings/' + $(this).parent().attr('class') + "/assign",
+          type: 'PATCH',
+          data: {guardId: guard.id},
+          success: function(result) {
+            window.location.href = "/shifts";
+          }
+      })
+      return false;
+    })
+
+    $('.unassign').click(function() {
+       $.ajax({
+          url: '/bookings/' + $(this).parent().attr('class') + "/unassign",
+          type: 'PATCH',
+          data: {guardId: guard.id},
+          success: function(result) {
+            window.location.href = "/shifts";
+          }
+      })
+      return false;
+    })
+
+    function initGoogleMaps() {
+      
+      for (i in allRequests) {
+        var request = allRequests[i];
+        var mapOptions = {
+          zoom: 12,
+        }
+        var fromMap = new google.maps.Map($('.from-map-' + request.id).get(0), mapOptions);
+        (function(fromMap) {
+          getAddress(request.fromAddress, function(results) {
+            fromMap.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+              map: fromMap,
+              position: results[0].geometry.location
+            });
+          });
+        })(fromMap);
+        var toMap = new google.maps.Map($('.to-map-' + request.id).get(0), mapOptions);
+        (function(toMap){
+           getAddress(request.toAddress, function(results) {
+              toMap.setCenter(results[0].geometry.location);
+              var marker = new google.maps.Marker({
+                  map: toMap,
+                  position: results[0].geometry.location
+              });
+          });
+        })(toMap);
+      }
+    }

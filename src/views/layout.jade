@@ -1,0 +1,84 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/reset.css')
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', integrity='sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u', crossorigin='anonymous')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(href='https://fonts.googleapis.com/css?family=Open+Sans', rel='stylesheet')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+
+  block head
+  body
+    block bodyTop
+    nav.navbar.navbar-default.navbar-static-top
+        .container-fluid
+          .navbar-header
+            button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1', aria-expanded='false')
+              span.sr-only Toggle navigation
+              span.icon-bar
+              span.icon-bar
+              span.icon-bar
+            a.navbar-brand(href='/')
+              img(alt="Brand" src="/images/logo.png", width=50, height=50)
+          .collapse.navbar-collapse
+            ul.nav.navbar-nav
+              if (user)
+                if (user.type.trim() === "ADMIN")
+                  li
+                    a(href="/admin/guards") 
+                      strong Guards
+                  li
+                    a(href="/admin/shifts") 
+                      strong Shifts
+                if (user.type.trim() === "GUARD")
+                  li
+                    a(href="/shifts") 
+                      strong Shifts
+                if (user.type.trim() === "VETERAN")
+                  li
+                    a(href="/bookings/create") 
+                      strong BOOK A GUARD
+                  li.upcoming
+                    a(href='/') Upcoming
+              else
+                li
+                  a(href='/about') About
+                li
+                  a(href='/pricing') Pricing
+                li
+                  a(href='/contact') Contact
+                li 
+                  a(href='/auth/login') Login
+                li 
+                  a(href='/auth/signup') Signup
+            ul.nav.navbar-nav.pull-right
+              if (user)
+                li
+                  a.navbar-right-item(href='/settings')
+                    img(alt="Brand" src="/images/settings.png", width=25, height=25)
+                li
+                  a.navbar-right-item(href='/notifications')
+                    img(alt="Brand" src="/images/notifications.png", width=25, height=25)
+                li
+                  a(href="/auth/logout") Logout
+
+
+      div.container
+        div.background
+        block content
+
+        script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
+        script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', integrity='sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa', crossorigin='anonymous')
+        script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC95Qos61Baz3Y_kgavcpfihat6oI4sXds&libraries=places&callback=initGoogleMaps" async defer)
+        script(src="/javascripts/cost-and-duration-calculator.js")
+        script(src="/javascripts/getAddress.js")
+        script.
+          $.get('/nav', function(data) {
+            $('.upcoming a').html('Upcoming(' + data.upcomingCount + ')');
+          });
+        block scripts
+        
+
+
+

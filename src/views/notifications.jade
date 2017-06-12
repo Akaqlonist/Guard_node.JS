@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  if notifications.length == 0
+    .panel-container
+      .panel
+        .panel-body You have no notifications
+  else
+    each notification in notifications
+      .panel-container
+        .panel
+          .panel-header Received at #{moment(parseInt(notification.timestamp)).format("LLLL")}
+          .panel-body!=notification.text

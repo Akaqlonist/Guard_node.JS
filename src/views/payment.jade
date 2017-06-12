@@ -1,0 +1,95 @@
+extends layout
+include progress-bar
+
+block head
+  script(type='text/javascript', src='https://js.stripe.com/v2/')
+  link(rel='stylesheet', href='/stylesheets/bookings.css')
+
+block content
+  +progress-bar(1)
+  .panel-container
+    .panel
+      if request.stripeChargeId
+        .panel-body
+          | You've already paid for this booking.
+      else
+        .panel-heading.small
+          h2 Choose a payment method
+          | Add a credit or debit card
+
+        .panel-body
+          form.request-form.payment-form(name="signup" method="post")
+            span.request-form-contents
+              if errors
+                div.errors
+                  each error in errors
+                    span.error=error
+                 div.input
+              div.label Name on card
+              input.textbox.full-width.input.left-text.m-b-4(type="text", data-stripe="name", required)
+              div.label Card Number
+              input.textbox.full-width.input.left-text.m-b-4(type="text", pattern="[0-9]{13,16}", data-stripe="number", required)
+              div.label.block.left-text.m-b-4 Expiration
+              select.select.expireMM.m-b-4.m-l-1(data-stripe='exp_month', required)
+                option(value='') Month
+                option(value='01') January
+                option(value='02') February
+                option(value='03') March
+                option(value='04') April
+                option(value='05') May
+                option(value='06') June
+                option(value='07') July
+                option(value='08') August
+                option(value='09') September
+                option(value='10') October
+                option(value='11') November
+                option(value='12') December
+              select.select.expireYY.m-l-2(data-stripe='exp_year', required)
+                option(value='') Year
+            div.actions
+              input.submit(type="submit", value="Submit Payment")
+       
+block scripts
+  script.
+    for (var i = new Date().getFullYear(); i < 2030; i++) {
+      $('.expireYY').append($('<option>', {value:i, text:i}));
+    }
+
+    Stripe.setPublishableKey('pk_test_PcJxvNeJrrsIRgmuHrhNiSbe');
+    $(function() {
+      var $form = $('.payment-form');
+      $form.submit(function(event) {
+        // Disable the submit button to prevent repeated clicks:
+        $('.submit').prop('disabled', true);
+
+        // Request a token from Stripe:
+        Stripe.card.createToken($form, stripeResponseHandler);
+
+        // Prevent the form from being submitted:
+        return false;
+      });
+    });
+
+    function stripeResponseHandler(status, response) {
+      // Grab the form:
+      var $form = $('.payment-form');
+
+      if (response.error) { // Problem!
+
+        // Show the errors on the form:
+        $form.find('.errors').text(response.error.message);
+        $form.find('.submit').prop('disabled', false); // Re-enable submission
+
+      } else { // Token was created!
+
+        // Get the token ID:
+        var token = response.id;
+
+        // Insert the token ID into the form so it gets submitted to the server:
+        $form.append($('<input type="hidden" name="stripeToken">').val(token));
+
+        // Submit the form:
+        $form.get(0).submit();
+      }
+    };
+    

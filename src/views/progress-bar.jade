@@ -1,0 +1,6 @@
+mixin progress-bar(activeNum)
+  div.progressbar-container
+    ul.progressbar
+      li(class="#{activeNum == 0 ? 'active' : ''}") REQUEST GUARD
+      li(class="#{activeNum == 1 ? 'active' : ''}") PAYMENT METHOD
+      li(class="#{activeNum == 2 ? 'active' : ''}") CONFIRMATION

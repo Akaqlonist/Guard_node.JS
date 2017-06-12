@@ -1,0 +1,12 @@
+mixin modal(title, content, acceptText, rejectText)
+  #myModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel')
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          button.close(type='button', data-dismiss='modal', aria-label='Close')
+            span(aria-hidden='true') ×
+          h4#myModalLabel.modal-title=title
+        .modal-body=content
+        .modal-footer
+          button.btn.btn-default(type='button', data-dismiss='modal')=rejectText
+          button.btn.btn-primary(type='button')=acceptText

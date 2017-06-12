@@ -1,0 +1,173 @@
+extends layout
+block head
+  link(rel='stylesheet', href='/stylesheets/home.css')
+
+block content
+  .panel-container
+    .panel.panel-default
+      .panel-heading Upcoming Bookings
+      .panel-body
+        if upcomingRequests.length == 0
+          | You have no upcoming bookings.
+        else
+          each request in upcomingRequests
+            div.request-container
+              div.m-b-4
+                | You have booked 
+                =request.numberOfGuards 
+                if request.numberOfGuards == 1
+                  |  VetGuard, 
+                else
+                  |  VetGuards, 
+                if request.armed
+                  | armed 
+                else
+                  | unarmed 
+                | and 
+                if request.uniformed
+                  | in casual attire, 
+                else
+                  | in business attire, 
+                | to 
+                if request.fromAction == "pickup"
+                  | pick you up by car 
+                else
+                  | arrive 
+                | on 
+                =moment(parseInt(request.fromTimestamp)).format("LL") 
+              div.map-container
+                div
+                  div(class='map from-map-#{request.id}')
+                  div.map-label.small.dark
+                    =moment(parseInt(request.fromTimestamp)).format("dddd, MM/DD/YY")
+                    |  at 
+                    =moment(parseInt(request.fromTimestamp)).format("hh:mm")
+                    |  at 
+                    =request.fromAddress
+                div
+                  div(class='map to-map-#{request.id}')
+                  div.map-label.small.dark
+                    =moment(parseInt(request.toTimestamp)).format("dddd, MM/DD/YY")
+                    |  at 
+                    =moment(parseInt(request.toTimestamp)).format("hh:mm")
+                    |  at 
+                    =request.toAddress
+              
+              div.panel-footer-custom
+                span.cost
+                  span.cost-label.small TOTAL COST
+                  br
+                  span(class="cost-amount cost-amount-#{request.id} big") $0
+                span.duration
+                  span.duration-label.small DURATION
+                  br
+                  span(class="duration-amount duration-amount-#{request.id} big") 0 hrs
+                div.edit-booking
+                  a.m-b-4(href="/bookings/#{request.id}") Edit
+
+
+
+    .panel.panel-default
+      .panel-heading Past Bookings  
+      .panel-body
+        if pastRequests.length == 0
+          | You have no past bookings.
+        else
+          each request in pastRequests
+            div.request-container
+              div.m-b-4
+                | You were served by 
+                =request.numberOfGuards 
+                if request.numberOfGuards == 1
+                  |  VetGuard, 
+                else
+                  |  VetGuards, 
+                if request.armed
+                  | armed 
+                else
+                  | unarmed 
+                | and 
+                if request.uniformed
+                  | uniformed. 
+                else
+                  | un-uniformed. 
+                if request.fromAction == "PICKUP"
+                  | The officer picked you up by car 
+                else
+                  | The officer arrived  
+                | on 
+                =moment(parseInt(request.fromTimestamp)).format("LL") 
+              div.map-container
+                div
+                  div(class='map from-map-#{request.id}')
+                  div.map-label.small.dark
+                    =moment(parseInt(request.fromTimestamp)).format("dddd, MM/DD/YY")
+                    |  at 
+                    =moment(parseInt(request.fromTimestamp)).format("hh:mm")
+                    |  at 
+                    =request.fromAddress
+                div
+                  div(class='map to-map-#{request.id}')
+                  div.map-label.small.dark
+                    =moment(parseInt(request.toTimestamp)).format("dddd, MM/DD/YY")
+                    |  at 
+                    =moment(parseInt(request.toTimestamp)).format("hh:mm")
+                    |  at 
+                    =request.toAddress
+
+              div.panel-footer-custom
+                span.cost
+                  span.cost-label.small TOTAL COST
+                  br
+                  span(class="cost-amount cost-amount-#{request.id} big") $0
+                span.duration
+                  span.duration-label.small DURATION
+                  br
+                  span(class="duration-amount duration-amount-#{request.id} big") 0 hrs
+
+block scripts
+  script.
+    var geocoder;
+    var pastRequests;
+    var upcomingRequests;
+    var allRequests;
+    $(document).ready(function() {
+      pastRequests = !{JSON.stringify(pastRequests)};
+      upcomingRequests = !{JSON.stringify(upcomingRequests)};
+      allRequests = pastRequests.concat(upcomingRequests);
+      for (i in allRequests) {
+        var request = allRequests[i];
+        var result = calculateCostAndDurationFromTimestamps(request.fromTimestamp, request.toTimestamp, request.numberOfGuards, request.armed);
+        $('.cost-amount-' + request.id).html("$" + result.cost);
+        $('.duration-amount-' + request.id).html(result.duration + " hrs");
+      }
+    });
+    function initGoogleMaps() {
+      
+      for (i in allRequests) {
+        var request = allRequests[i];
+        var mapOptions = {
+          zoom: 12,
+        }
+        var fromMap = new google.maps.Map($('.from-map-' + request.id).get(0), mapOptions);
+        (function(fromMap) {
+          getAddress(request.fromAddress, function(results) {
+            fromMap.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+              map: fromMap,
+              position: results[0].geometry.location
+            });
+          });
+        })(fromMap);
+        var toMap = new google.maps.Map($('.to-map-' + request.id).get(0), mapOptions);
+        (function(toMap){
+           getAddress(request.toAddress, function(results) {
+              toMap.setCenter(results[0].geometry.location);
+              var marker = new google.maps.Marker({
+                  map: toMap,
+                  position: results[0].geometry.location
+              });
+          });
+        })(toMap);
+      }
+    }

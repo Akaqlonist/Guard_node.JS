@@ -1,0 +1,29 @@
+extends layout
+block head
+  link(rel='stylesheet', href='/stylesheets/settings.css')
+
+block content
+  .panel-container
+    .panel.panel-default
+      .panel-heading Settings
+      .panel-body
+        if errors
+          div.errors
+            each error in errors
+              span.alert.alert-danger=error
+
+        form.update-user-form(name="update-user" method="post")
+          div.form-group
+            div.label Email
+            input.textbox.form-control(type="email", name="email", required, value=user ? user.email : '')
+          div.form-group
+            div.label First Name
+            input.textbox.form-control(type="text", name="firstName", required, value=user ? user.firstName : '')
+          div.form-group            
+            div.label Last Name
+            input.textbox.form-control(type="text", name="lastName", required, value=user ? user.lastName : '')
+          div.form-group
+            div.label Phone Number
+            input.textbox.form-control(type="tel", name="phoneNumber", required, value=user ? user.phoneNumber : '')
+          div.actions
+            input.submit(type="submit", value="Submit")

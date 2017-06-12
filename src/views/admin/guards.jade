@@ -1,0 +1,37 @@
+extends ../layout
+block head
+  link(rel='stylesheet', href='/stylesheets/admin.css')
+  script(src='/javascripts/sortable.min.js')
+  link(rel='stylesheet', href='/stylesheets/sortable-theme-bootstrap.css')
+
+block content
+  .panel-container
+    .panel.panel-default
+      table.table.table-striped.sortable-bootstrap(data-sortable)
+        thead
+          tr
+            th First Name
+            th Last Name
+            th Email
+            th Phone Number
+            th Date of Birth
+            th Service Address
+            th Service Radius
+        tbody
+          each guard in guards
+            tr
+              td=guard.firstName
+              td=guard.lastName
+              td 
+                a(href="mailto:#{guard.email}")=guard.email
+              td=guard.phoneNumber
+              td=moment(guard.dateOfBirth).format("MM/DD/YYYY")
+              td=guard.serviceAddress
+              td=guard.serviceRadius
+              td 
+                a(href="./guards/#{guard.id}") Edit
+
+
+
+    a.btn.btn-default(href='./guards/create', role='button') Create Guard
+

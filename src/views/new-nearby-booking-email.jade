@@ -1,0 +1,79 @@
+head
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', href='/stylesheets/bookings.css')
+  link(rel='stylesheet', href='/stylesheets/payment-confirmation.css')
+body
+   div.confirmation-text.m-b-4
+    | A new booking is available, with 
+    =request.numberOfGuards 
+    if request.numberOfGuards == 1
+      |  VetGuard, 
+    else
+      |  VetGuards, 
+    if request.armed
+      | armed 
+    else
+      | unarmed 
+    | and 
+    if request.uniformed
+      | uniformed, 
+    else
+      | in business attire, 
+    | to 
+    if request.fromAction == "pickup"
+      | to pick up the customer by car 
+    else
+      | arrive 
+    | on 
+    =moment(parseInt(request.fromTimestamp)).format("LL") 
+    | .
+  div.map-container
+    div
+      img.map(src="https://maps.googleapis.com/maps/api/staticmap?markers=#{request.fromAddress}&size=225x175&key=AIzaSyCAw1qB2QOqDO_5-YQ9oR34k_WYoz4hfKw")
+      div.map-label.small.dark
+        =moment(parseInt(request.fromTimestamp)).format("dddd, MM/DD/YY")
+        |  at 
+        =moment(parseInt(request.fromTimestamp)).format("hh:mm")
+        |  at 
+        =request.fromAddress
+    div
+      img.map(src="https://maps.googleapis.com/maps/api/staticmap?markers=#{request.toAddressAddress}&size=225x175&key=AIzaSyCAw1qB2QOqDO_5-YQ9oR34k_WYoz4hfKw")
+      div.map-label.small.dark
+        =moment(parseInt(request.toTimestamp)).format("dddd, MM/DD/YY")
+        |  at 
+        =moment(parseInt(request.toTimestamp)).format("hh:mm")
+        |  at 
+        =request.toAddress
+    a(href="#{baseUrl}/shifts") View your shifts
+  script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC95Qos61Baz3Y_kgavcpfihat6oI4sXds&libraries=places&callback=initGoogleMaps" async defer)
+  script.
+    var geocoder;
+    var pastRequests;
+    var upcomingRequests;
+    var allRequests;
+    function initGoogleMaps() {
+      var request = !{JSON.stringify(request)};
+      var mapOptions = {
+        zoom: 12,
+      }
+      var fromMap = new google.maps.Map($('.from-map-' + request.id).get(0), mapOptions);
+      (function(fromMap) {
+        getAddress(request.fromAddress, function(results) {
+          fromMap.setCenter(results[0].geometry.location);
+          var marker = new google.maps.Marker({
+            map: fromMap,
+            position: results[0].geometry.location
+          });
+        });
+      })(fromMap);
+      var toMap = new google.maps.Map($('.to-map-' + request.id).get(0), mapOptions);
+      (function(toMap){
+         getAddress(request.fromAddress, function(results) {
+            toMap.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+                map: toMap,
+                position: results[0].geometry.location
+            });
+        });
+      })(toMap);
+    }

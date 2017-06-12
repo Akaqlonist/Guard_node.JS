@@ -1,0 +1,46 @@
+
+.map-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+.map {
+  width: 225px; 
+  height: 175px;
+  display: inline-block;
+}
+
+.map-label {
+  width: 225px;
+}
+
+.panel-container {
+  width: 600px;
+  margin-left: auto;
+  margin-right: auto; 
+  margin-top: 15px;
+}
+
+.panel-footer-custom {
+  margin-top: 20px;
+  display: flex
+}
+
+.cost {
+  padding-right: 10px;
+}
+
+.request-container {
+  padding: 8px 0px;
+  font-size: 18px;
+}
+
+.request-container:not(:last-child) {
+  border-bottom: 1px solid #ddd;
+}
+
+.actions {
+  margin-left: auto;
+  margin-right: 15px;
+  margin-top: 25px;
+}

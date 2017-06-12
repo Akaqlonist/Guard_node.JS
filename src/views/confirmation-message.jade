@@ -1,0 +1,51 @@
+mixin confirmation-message()
+  div.confirmation-text.m-b-4
+    | You have booked 
+    =request.numberOfGuards 
+    if request.numberOfGuards == 1
+      |  VetGuard, 
+    else
+      |  VetGuards, 
+    if request.armed
+      | armed 
+    else
+      | unarmed 
+    | and 
+    if request.uniformed
+      | in casual attire, 
+    else
+      | in business attire, 
+    | to 
+    if request.fromAction == "pickup"
+      | pick you up by car 
+    else
+      | arrive 
+    | on 
+    =moment(parseInt(request.fromTimestamp)).format("LL") 
+    | .
+  div.map-container
+    div
+      img.map(src="https://maps.googleapis.com/maps/api/staticmap?markers=#{request.fromAddress}&size=225x175&key=AIzaSyCAw1qB2QOqDO_5-YQ9oR34k_WYoz4hfKw")
+      div.map-label.small.dark
+        =moment(parseInt(request.fromTimestamp)).format("dddd, MM/DD/YY")
+        |  at 
+        =moment(parseInt(request.fromTimestamp)).format("hh:mm")
+        |  at 
+        =request.fromAddress
+    div
+      img.map(src="https://maps.googleapis.com/maps/api/staticmap?markers=#{request.fromAddress}&size=225x175&key=AIzaSyCAw1qB2QOqDO_5-YQ9oR34k_WYoz4hfKw")
+      div.map-label.small.dark
+        =moment(parseInt(request.toTimestamp)).format("dddd, MM/DD/YY")
+        |  at 
+        =moment(parseInt(request.toTimestamp)).format("hh:mm")
+        |  at 
+        =request.fromAddress
+  div
+    br
+    | Your credit card ending in 1234 was charged $X.
+    | If you have any questions, feel free to contact us at 646.226.1820
+    br
+    br          
+    | Looking forward to serve you,
+    br
+    | VetGuard

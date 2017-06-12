@@ -1,0 +1,32 @@
+extends layout
+block head
+  link(rel='stylesheet', href='/stylesheets/login-and-signup.css')
+
+block content
+    div.stars
+
+    form.login-form(name="login" method="post")
+      span.login-form-contents
+        div.login-form-title(style='white-space:pre;')
+          | Welcome to
+          | VETGUARD
+        if errors
+          div.errors
+            each error in errors
+              span.error=error
+        div.input
+          div.label Email
+          if email
+            input.textbox(type="text", placeholder="Enter your email", name="email" value=email)
+          else
+            input.textbox(type="text", placeholder="Enter your email", name="email")
+          div.label Password
+          input.textbox(type="password", placeholder="Enter your password", name="password")
+          br
+        input.checkbox(type="checkbox", name="rememberme")
+        span.checkbox-label Remember Me
+        a(href="/auth/forgot") Forgot your password?
+        div.actions
+          input.submit(type="submit", value="LOG IN")
+        div
+         a(href="/auth/signup") No account? Sign up

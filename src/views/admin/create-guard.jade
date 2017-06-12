@@ -1,0 +1,96 @@
+extends ../layout
+block head
+  link(rel='stylesheet', href='/stylesheets/create-guard.css')
+
+block content
+  .panel-container
+    .panel.panel-default
+      .panel-body
+        if errors
+          div.errors
+            each error in errors
+              span.alert.alert-danger=error
+
+        form.create-guard-form(name="create-guard" method="post")
+          div.form-group
+            div.label Email
+            input.textbox.form-control(type="email", name="email", required, value=guard ? guard.email : '')
+          div.form-group
+            div.label First Name
+            input.textbox.form-control(type="text", name="firstName", required, value=guard ? guard.firstName : '')
+          div.form-group            
+            div.label Last Name
+            input.textbox.form-control(type="text", name="lastName", required, value=guard ? guard.lastName : '')
+          if (!guard)
+            div.form-group
+              div.label Password
+              input.textbox.form-control(type="password", name="password", id="password", required)
+            div.form-group
+              div.label Confirm Password
+              input.textbox.form-control(type="password", name="confirm_password", id="confirm_password", required)
+          div.form-group
+            div.label Phone Number
+            input.textbox.form-control(type="tel", name="phoneNumber", required, value=guard ? guard.phoneNumber : '')
+          div.form-group
+            div.label Date of Birth
+            input.textbox.form-control(type="date", name="dateOfBirth", required, value=guard ? moment(guard.dateOfBirth).format("YYYY-DD-MM") : '')
+          div.form-group
+            div.label Service Address
+            input.textbox.form-control.service-address(type="text", name="serviceAddress", required, value=guard ? guard.serviceAddress : '')
+          div.form-group
+            div.label Service Radius
+            input.textbox.form-control(type="number", min="1", max="100", placeholder="1-100", name="serviceRadius", required, value=guard ? guard.serviceRadius : '')
+          div.actions
+            input.submit(type="submit", value="Submit")
+block scripts
+  script.
+    var guard = !{JSON.stringify(guard || null)};
+    var serviceAddressAutocomplete;
+    var serviceLat = guard ? guard.serviceLat : null
+    var serviceLong = guard ? guard.serviceLong : null;
+    function initGoogleMaps() {
+      // Create the autocomplete object, restricting the search to geographical
+      // location types.
+         serviceAddressAutocomplete = new google.maps.places.Autocomplete(
+          /** @type {!HTMLInputElement} */($('.service-address').get(0)),
+          {types: ['geocode']});
+
+         google.maps.event.addListener(serviceAddressAutocomplete, 'place_changed', function () {
+            var fromPlace = serviceAddressAutocomplete.getPlace();
+            serviceLat = fromPlace.geometry.location.lat();
+            serviceLong = fromPlace.geometry.location.lng();
+         });
+
+      }
+
+    var $form = $('.create-guard-form');
+    $form.submit(function(event) {
+      // Disable the submit button to prevent repeated clicks:
+      $('.submit').prop('disabled', true);
+      
+      // Insert the token ID into the form so it gets submitted to the server:
+      $form.append($('<input type="hidden" name="serviceLat">').val(serviceLat));
+      $form.append($('<input type="hidden" name="serviceLong">').val(serviceLong));
+      $form.append($('<input type="hidden" name="userId">').val(guard.userId));
+
+      $from.get(0).submit();
+      return false;
+    });
+
+    var password = document.getElementById("password")
+    , confirm_password = document.getElementById("confirm_password");
+
+    function validatePassword(){
+      if(password.value != confirm_password.value) {
+        confirm_password.setCustomValidity("Passwords Don't Match");
+      } else {
+        confirm_password.setCustomValidity('');
+      }
+    }
+
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+
+
+
+    

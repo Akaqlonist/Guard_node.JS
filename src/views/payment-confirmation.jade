@@ -1,0 +1,49 @@
+extends layout
+include progress-bar
+include confirmation-message
+
+block head
+  link(rel='stylesheet', href='/stylesheets/bookings.css')
+  link(rel='stylesheet', href='/stylesheets/payment-confirmation.css')
+
+block content
+  +progress-bar(2)
+  .panel-container
+    .panel
+      .panel-heading 
+        h2 Thank you for your order
+        | Lorem ipsum dolorem
+      .panel-body
+        div.request-container
+          +confirmation-message()
+  script.
+    var geocoder;
+    var pastRequests;
+    var upcomingRequests;
+    var allRequests;
+    function initGoogleMaps() {
+      var request = !{JSON.stringify(request)};
+      var mapOptions = {
+        zoom: 12,
+      }
+      var fromMap = new google.maps.Map($('.from-map-' + request.id).get(0), mapOptions);
+      (function(fromMap) {
+        getAddress(request.fromAddress, function(results) {
+          fromMap.setCenter(results[0].geometry.location);
+          var marker = new google.maps.Marker({
+            map: fromMap,
+            position: results[0].geometry.location
+          });
+        });
+      })(fromMap);
+      var toMap = new google.maps.Map($('.to-map-' + request.id).get(0), mapOptions);
+      (function(toMap){
+         getAddress(request.fromAddress, function(results) {
+            toMap.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+                map: toMap,
+                position: results[0].geometry.location
+            });
+        });
+      })(toMap);
+    }
